@@ -1,0 +1,23 @@
+.badges {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.widget_n_button {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.widget-error-temp {
+    color: white;
+    background-color: red;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 8px;
+    text-align: center;
+    transition: opacity 0.5s ease-in-out;
+}
