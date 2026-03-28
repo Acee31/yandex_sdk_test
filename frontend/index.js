@@ -7,7 +7,7 @@ function onYaPayLoad() {
         env: YaPay.PaymentEnv.Sandbox,
         version: 4,
         currencyCode: YaPay.CurrencyCode.Rub,
-        merchantId: '614418a7-ff79-4e27-aeb5-f3a30876fc33',
+        merchantId: '',
         totalAmount: '10000',
         availablePaymentMethods: ['SPLIT'],
     };
@@ -21,6 +21,10 @@ function onYaPayLoad() {
             });
 
             const result = await response.json();
+            if (!response.ok) {
+                console.error("Ошибка с сервера:", result.detail)
+            }
+
             return result.paymentUrl;
         } catch (err) {
             console.error("Ошибка при создании заказа:", err);

@@ -83,11 +83,13 @@ async def create_order(
         data = resp.json()
         print(data)
     except HTTPStatusError as e:
+        print(e)
+        print(e.response.json())
         raise HTTPException(status_code=e.response.status_code, detail=e.response.json())
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=f"Network error: {e}")
 
-    raise ValueError('test')
     payment_url = data.get("data", {}).get("paymentUrl")
     return {"paymentUrl": payment_url}
 
