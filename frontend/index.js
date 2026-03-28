@@ -7,9 +7,9 @@ function onYaPayLoad() {
         env: YaPay.PaymentEnv.Sandbox,
         version: 4,
         currencyCode: YaPay.CurrencyCode.Rub,
-        merchantId: '',
-        totalAmount: '1000.00',
-        availablePaymentMethods: ['CARD', 'SPLIT'],
+        merchantId: '614418a7-ff79-4e27-aeb5-f3a30876fc33',
+        totalAmount: '10000',
+        availablePaymentMethods: ['SPLIT'],
     };
 
     async function createOrderAndGetUrl() {
@@ -34,19 +34,9 @@ function onYaPayLoad() {
     }
 
     async function onWidgetCheckoutClick() {
-        const paymentUrl = await createOrderAndGetUrl();
+         const paymentUrl = await createOrderAndGetUrl();
         if (!paymentUrl) {
-            const widgetEl = document.querySelector('#widget');
-            if (!widgetEl) {
-                return;
-            }
-            const errorDiv = document.createElement('div');
-            errorDiv.textContent = 'Что-то пошло не так';
-            errorDiv.classList.add('widget-error-temp');
-            widgetEl.appendChild(errorDiv);
-
-
-            setTimeout(() => errorDiv.remove(), 3000);
+            alert("Что то пошло не так")
 
             return;
         }
@@ -64,6 +54,32 @@ function onYaPayLoad() {
         onWidgetCheckoutClick: onWidgetCheckoutClick
     })
     .then(function (paymentSession) {
+        YaPay.mountBadge(
+            document.querySelector('#badge-cashback'),
+            {
+                type: 'ultimate',
+                amount: paymentData.totalAmount,
+                size: 'l',
+                variant: 'detailed',
+                theme: 'light',
+                align: 'center',
+                source: 'listing',
+                merchantId: paymentData.merchantId,
+            }
+        );
+        YaPay.mountBadge(
+            document.querySelector('#badge-bnpl'),
+            {
+                type: 'bnpl',
+                amount: paymentData.totalAmount,
+                size: 'l',
+                variant: 'detailed',
+                theme: 'light',
+                color: 'green',
+                merchantId: paymentData.merchantId,
+            }
+        );
+
         // Рендер виджета
         paymentSession.mountWidget(
             document.querySelector('#widget'),
@@ -85,30 +101,10 @@ function onYaPayLoad() {
                 width: YaPay.ButtonWidth.Auto,
         });
 
-        // Рендер бейджа
+        let isWidgetMounted = false
 
-    })
-    .catch(function (err) {
-        console.error('Не получилось создать платежную сессию:', err);
-    });
-
-
-    YaPay.mountBadge(
-            document.querySelector('#badge-cashback'),
-            {
-                type: 'ultimate',
-                amount: paymentData.totalAmount,
-                size: 'm',
-                variant: 'detailed',
-                theme: 'light',
-                align: 'center',
-                source: 'listing',
-                merchantId: paymentData.merchantId,
-            }
-    );
-    YaPay.mountBadge(
-            document.querySelector('#badge-bnpl'),
-            {
+        YaPay.mountBadge(
+            document.querySelector("#badge-toggle"), {
                 type: 'bnpl',
                 amount: paymentData.totalAmount,
                 size: 'l',
@@ -117,7 +113,80 @@ function onYaPayLoad() {
                 color: 'green',
                 merchantId: paymentData.merchantId,
             }
-    );
+        );
+        document.querySelector("#badge-toggle").addEventListener("click", () => {
+            const container = document.querySelector("#widget-toggle-container");
 
-    console.log('YaPay env:', paymentData.env);
+            if (!isWidgetMounted) {
+                const widgetDiv = document.createElement("div");
+                widgetDiv.id = "dynamic-widget";
+                container.appendChild(widgetDiv);
+
+                paymentSession.mountWidget(widgetDiv, {
+                    widgetType: YaPay.WidgetType.Ultimate,
+                    widgetTheme: YaPay.WidgetTheme.Dark,
+                    borderRadius: 20,
+                    padding: YaPay.WidgetPaddingType.Default,
+                    withOutline: false,
+                    widgetBackground: YaPay.WidgetBackgroundType.Saturated,
+                    hideWidgetHeader: false,
+                    widgetSize: YaPay.WidgetSize.Medium,
+                })
+
+                isWidgetMounted = true
+            } else {
+                container.innerHTML = ""
+                isWidgetMounted = false
+            }
+        })
+
+        const widgetModal = document.querySelector("#widget-modal");
+        const widgetModalContainer = document.querySelector("#widget-modal-container");
+
+        let isModalWidgetMounted = false;
+        
+        YaPay.mountBadge(
+            document.querySelector("#badge-modal"), {
+                type: 'bnpl',
+                amount: paymentData.totalAmount,
+                size: 'l',
+                variant: 'detailed',
+                theme: 'light',
+                color: 'black',
+                merchantId: paymentData.merchantId,
+        });
+
+        document.querySelector("#badge-modal").addEventListener("click", () => {
+            widgetModal.style.display = "block"
+
+            if (!isModalWidgetMounted) {
+                const modalWidgetDiv = document.createElement("div");
+                modalWidgetDiv.id = "dynamic-modal-widget";
+                widgetModalContainer.appendChild(modalWidgetDiv);
+
+                paymentSession.mountWidget(modalWidgetDiv, {
+                    widgetType: YaPay.WidgetType.Ultimate,
+                    widgetTheme: YaPay.WidgetTheme.White,
+                    borderRadius: 20,
+                    padding: YaPay.WidgetPaddingType.Default,
+                    withOutline: false,
+                    widgetBackground: YaPay.WidgetBackgroundType.Saturated,
+                    hideWidgetHeader: false,
+                    widgetSize: YaPay.WidgetSize.Medium,
+                });
+
+                isModalWidgetMounted = true;
+            }
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target === widgetModal) {
+                widgetModal.style.display = "none";
+            }
+        });
+
+    })
+    .catch(function (err) {
+        console.error('Не получилось создать платежную сессию:', err);
+    });
 }

@@ -87,6 +87,7 @@ async def create_order(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Network error: {e}")
 
+    raise ValueError('test')
     payment_url = data.get("data", {}).get("paymentUrl")
     return {"paymentUrl": payment_url}
 

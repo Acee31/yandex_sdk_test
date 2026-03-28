@@ -11,13 +11,41 @@
     gap: 15px;
 }
 
-.widget-error-temp {
-    color: white;
-    background-color: red;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    margin-top: 8px;
+.extra {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.extra-toggle {
+    display: flex;
+    flex-direction: column;
+}
+
+#widget-toggle-container {
+    margin-top: 10px;
+}
+
+.widget-modal {
+    display: none; /* скрыто по умолчанию */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.widget-modal-content {
+    background-color: black;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
     text-align: center;
-    transition: opacity 0.5s ease-in-out;
+    position: relative;
 }
