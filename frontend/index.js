@@ -23,6 +23,7 @@ function onYaPayLoad() {
             const result = await response.json();
             if (!response.ok) {
                 console.error("Ошибка с сервера:", result.detail)
+                return;
             }
 
             return result.paymentUrl;
